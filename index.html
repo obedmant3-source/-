@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Артём и Диана — переписка</title>
+<title>Артём и Диана — интерактивная история</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -11,69 +11,75 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     min-height: 100vh;
     background:
-      radial-gradient(circle at 20% 10%, rgba(255, 70, 120, 0.18), transparent 35%),
-      radial-gradient(circle at 80% 90%, rgba(90, 100, 255, 0.16), transparent 40%),
-      #09090d;
-    color: #f0eef7;
+      radial-gradient(circle at 15% 5%, rgba(255, 60, 110, 0.16), transparent 35%),
+      radial-gradient(circle at 85% 95%, rgba(90, 100, 255, 0.14), transparent 40%),
+      #08080c;
+    color: #f2effa;
     display: flex;
-    align-items: center;
     justify-content: center;
-    padding: 18px;
+    align-items: center;
+    padding: 16px;
   }
 
   .app {
     width: 100%;
-    max-width: 480px;
+    max-width: 520px;
+    height: min(820px, calc(100vh - 32px));
+    display: flex;
+    flex-direction: column;
   }
 
   .hidden { display: none !important; }
 
-  /* Стартовый экран */
+  /* ------- Экран старта ------- */
   .start-screen {
-    background: rgba(18, 18, 28, 0.86);
+    background: rgba(17, 17, 27, 0.88);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 28px;
-    padding: 54px 34px;
+    border-radius: 30px;
+    padding: 50px 32px;
     text-align: center;
-    backdrop-filter: blur(18px);
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .badge {
     display: inline-block;
-    padding: 6px 14px;
+    align-self: center;
+    padding: 7px 16px;
     border-radius: 999px;
-    background: rgba(255, 70, 120, 0.12);
-    border: 1px solid rgba(255, 70, 120, 0.35);
+    background: rgba(255, 60, 110, 0.12);
+    border: 1px solid rgba(255, 60, 110, 0.35);
     color: #ff7a9f;
     font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    margin-bottom: 22px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    margin-bottom: 24px;
   }
 
   .start-screen h1 {
-    font-size: clamp(34px, 9vw, 46px);
-    line-height: 1.05;
-    letter-spacing: -0.04em;
-    margin-bottom: 14px;
+    font-size: clamp(34px, 8vw, 48px);
+    line-height: 1.03;
+    letter-spacing: -0.045em;
+    margin-bottom: 16px;
   }
 
-  .start-screen h1 span {
-    color: #ff4f7e;
-  }
+  .start-screen h1 span { color: #ff4f7e; }
 
-  .start-screen p {
-    color: #9995ad;
+  .start-screen .lead {
+    color: #9a96af;
     font-size: 15px;
-    line-height: 1.6;
-    max-width: 320px;
-    margin: 0 auto 32px;
+    line-height: 1.65;
+    max-width: 340px;
+    margin: 0 auto 34px;
   }
 
   .start-btn {
     width: 100%;
-    padding: 17px 24px;
+    padding: 18px 24px;
     border: none;
     border-radius: 16px;
     background: linear-gradient(135deg, #ff4f7e, #ff785a);
@@ -82,98 +88,80 @@
     font-weight: 800;
     cursor: pointer;
     transition: transform 0.18s, box-shadow 0.18s;
-    box-shadow: 0 14px 32px rgba(255, 79, 126, 0.28);
+    box-shadow: 0 16px 36px rgba(255, 79, 126, 0.3);
   }
 
-  .start-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 18px 40px rgba(255, 79, 126, 0.38);
-  }
-
+  .start-btn:hover { transform: translateY(-2px); }
   .start-btn:active { transform: translateY(0); }
 
   .start-note {
     margin-top: 18px;
-    color: #5f5c70;
+    color: #55526a;
     font-size: 12px;
   }
 
-  /* Чат */
+  /* ------- Чат ------- */
   .chat-screen {
-    height: min(760px, calc(100vh - 36px));
     background: #101017;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 28px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    height: 100%;
     box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+    position: relative;
   }
 
   .chat-header {
     display: flex;
     align-items: center;
-    gap: 13px;
-    padding: 16px 18px;
-    background: rgba(22, 22, 34, 0.92);
+    gap: 12px;
+    padding: 14px 16px;
+    background: rgba(22, 22, 34, 0.94);
     border-bottom: 1px solid rgba(255, 255, 255, 0.07);
     backdrop-filter: blur(14px);
+    z-index: 5;
   }
 
   .avatar {
-    width: 44px;
-    height: 44px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    font-size: 17px;
+    font-size: 16px;
     flex-shrink: 0;
+    transition: 0.3s;
   }
 
-  .avatar.diana {
-    background: linear-gradient(135deg, #ff4f7e, #ff9a6b);
-    color: #fff;
-  }
+  .avatar.diana { background: linear-gradient(135deg, #ff4f7e, #ff9a6b); color: #fff; }
+  .avatar.artem { background: linear-gradient(135deg, #5a6bff, #8b9dff); color: #fff; }
+  .avatar.system { background: #2a2a3d; color: #9a96b0; }
 
-  .header-info {
-    flex: 1;
-    min-width: 0;
-  }
+  .header-info { flex: 1; min-width: 0; }
 
-  .header-name {
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 2px;
-  }
+  .header-name { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+  .header-status { font-size: 12px; color: #ff7a9f; transition: 0.3s; }
 
-  .header-status {
-    font-size: 12px;
-    color: #ff7a9f;
+  .stats {
+    display: flex;
+    gap: 14px;
+    padding: 9px 18px;
+    background: rgba(16, 16, 23, 0.9);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 11px;
+    color: #7a7691;
+    z-index: 5;
   }
-
-  .reset-btn {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.04);
-    color: #a09cb5;
-    font-size: 12px;
-    padding: 8px 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.18s;
-    flex-shrink: 0;
-  }
-
-  .reset-btn:hover {
-    color: #fff;
-    border-color: rgba(255, 255, 255, 0.22);
-  }
+  .stats span b { color: #ff7a9f; font-weight: 700; }
 
   .messages {
     flex: 1;
     overflow-y: auto;
-    padding: 22px 16px 28px;
+    padding: 20px 15px 24px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -181,23 +169,16 @@
   }
 
   .messages::-webkit-scrollbar { width: 5px; }
-  .messages::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.12);
-    border-radius: 10px;
-  }
+  .messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 10px; }
 
-  .message-row {
-    display: flex;
-    width: 100%;
-    animation: pop 0.24s ease-out;
-  }
-
+  .message-row { display: flex; width: 100%; animation: pop 0.26s ease-out; }
   .message-row.diana { justify-content: flex-start; }
   .message-row.artem { justify-content: flex-end; }
+  .message-row.system { justify-content: center; }
 
   .bubble {
-    max-width: 82%;
-    padding: 12px 15px;
+    max-width: 84%;
+    padding: 11px 15px;
     border-radius: 18px;
     font-size: 15px;
     line-height: 1.45;
@@ -218,35 +199,176 @@
     box-shadow: 0 6px 18px rgba(255, 79, 126, 0.18);
   }
 
+  .message-row.system .bubble {
+    background: rgba(255, 255, 255, 0.05);
+    color: #9a96b0;
+    font-size: 13px;
+    text-align: center;
+    border-radius: 12px;
+    max-width: 92%;
+  }
+
+  .narrator {
+    background: rgba(90, 100, 255, 0.08);
+    border: 1px solid rgba(90, 100, 255, 0.2);
+    color: #b8b5e0;
+    font-size: 13px;
+    font-style: italic;
+    line-height: 1.55;
+    text-align: center;
+    border-radius: 14px;
+    padding: 13px 16px;
+    max-width: 92%;
+  }
+
   @keyframes pop {
     from { opacity: 0; transform: translateY(8px) scale(0.98); }
     to { opacity: 1; transform: translateY(0) scale(1); }
   }
 
   /* Индикатор печати */
-  .typing-bubble {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 14px 16px;
-    min-width: 58px;
-  }
-
+  .typing-bubble { display: flex; align-items: center; gap: 5px; padding: 14px 16px; min-width: 58px; }
   .typing-bubble span {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #817d96;
+    width: 7px; height: 7px; border-radius: 50%; background: #817d96;
     animation: blink 1.2s infinite ease-in-out;
   }
-
   .typing-bubble span:nth-child(2) { animation-delay: 0.18s; }
   .typing-bubble span:nth-child(3) { animation-delay: 0.36s; }
-
   @keyframes blink {
     0%, 60%, 100% { opacity: 0.25; transform: translateY(0); }
     30% { opacity: 1; transform: translateY(-3px); }
   }
+
+  /* Панель выборов */
+  .choices {
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    background: rgba(20, 20, 32, 0.96);
+    backdrop-filter: blur(14px);
+    padding: 14px 14px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    max-height: 46%;
+    overflow-y: auto;
+    z-index: 5;
+  }
+
+  .choices::-webkit-scrollbar { width: 4px; }
+  .choices::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 10px; }
+
+  .choice-btn {
+    width: 100%;
+    text-align: left;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 14px;
+    color: #e8e5f3;
+    font-size: 14px;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: 0.16s;
+    font-family: inherit;
+  }
+
+  .choice-btn:hover {
+    background: rgba(255, 79, 126, 0.1);
+    border-color: rgba(255, 79, 126, 0.4);
+    transform: translateX(3px);
+  }
+
+  .choice-btn .tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 6px;
+    margin-right: 8px;
+    vertical-align: middle;
+    background: rgba(255, 255, 255, 0.08);
+    color: #b8b5e0;
+  }
+  .choice-btn .tag.bold { background: rgba(255, 79, 126, 0.16); color: #ff9ab4; }
+  .choice-btn .tag.care { background: rgba(90, 255, 180, 0.12); color: #7dffc0; }
+  .choice-btn .tag.cold { background: rgba(120, 140, 255, 0.12); color: #9aa8ff; }
+
+  /* Переходы (тёмный экран) */
+  .transition-overlay {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.7s ease;
+    z-index: 20;
+    text-align: center;
+  }
+
+  .transition-overlay.active { opacity: 1; pointer-events: all; }
+
+  .transition-text {
+    color: #fff;
+    font-size: clamp(18px, 4vw, 24px);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1.6;
+    max-width: 400px;
+    text-transform: uppercase;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.6s ease 0.3s;
+  }
+
+  .transition-overlay.active .transition-text { opacity: 1; transform: translateY(0); }
+
+  .transition-text small {
+    display: block;
+    font-size: 13px;
+    color: #666;
+    font-weight: 400;
+    margin-top: 14px;
+    letter-spacing: 0.02em;
+    text-transform: none;
+  }
+
+  /* Экран концовки */
+  .end-screen {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 30%, rgba(255, 60, 110, 0.18), transparent 60%), #0a0a10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 28px;
+    text-align: center;
+    z-index: 25;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+  }
+  .end-screen.active { opacity: 1; pointer-events: all; }
+  .end-screen h2 { font-size: 30px; margin-bottom: 14px; letter-spacing: -0.03em; }
+  .end-screen p { color: #a09cb5; font-size: 15px; line-height: 1.6; max-width: 320px; margin-bottom: 30px; }
+  .end-screen .score { color: #ff7a9f; font-weight: 700; }
+  .restart-btn {
+    padding: 14px 34px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ff4f7e, #ff785a);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.18s;
+    font-family: inherit;
+  }
+  .restart-btn:hover { transform: translateY(-2px); }
 </style>
 </head>
 <body>
@@ -255,149 +377,665 @@
 
   <!-- Старт -->
   <section class="start-screen" id="startScreen">
-    <div class="badge">18+</div>
+    <div class="badge">18+ · ВЫБОР ИМЕЕТ ЗНАЧЕНИЕ</div>
     <h1>Артём<br><span>и Диана</span></h1>
-    <p>Очень горячая переписка. Нажми, чтобы открыть чат.</p>
-    <button class="start-btn" id="startBtn">Начать</button>
-    <div class="start-note">Персонажи совершеннолетние. Всё вымысел.</div>
+    <p class="lead">Одна ночь, одно утро, одна школа. Каждое сообщение меняет то, чем всё закончится. Оступишься — потеряешь её.</p>
+    <button class="start-btn" id="startBtn">Начать историю</button>
+    <div class="start-note">Все персонажи совершеннолетние. Вымысел.</div>
   </section>
 
   <!-- Чат -->
   <section class="chat-screen hidden" id="chatScreen">
     <header class="chat-header">
-      <div class="avatar diana">Д</div>
+      <div class="avatar diana" id="chatAvatar">Д</div>
       <div class="header-info">
-        <div class="header-name">Диана</div>
-        <div class="header-status" id="status">онлайн</div>
+        <div class="header-name" id="chatName">Диана</div>
+        <div class="header-status" id="chatStatus">онлайн</div>
       </div>
-      <button class="reset-btn" id="resetBtn">Заново</button>
     </header>
 
+    <div class="stats" id="stats">
+      <span>Доверие: <b id="statTrust">5</b></span>
+      <span>Накал: <b id="statHeat">3</b></span>
+      <span>Обида: <b id="statAnger">0</b></span>
+    </div>
+
     <main class="messages" id="messages"></main>
+    <div class="choices" id="choices"></div>
+
+    <!-- Переход -->
+    <div class="transition-overlay" id="transition">
+      <div class="transition-text" id="transitionText"></div>
+    </div>
+
+    <!-- Финал -->
+    <div class="end-screen" id="endScreen">
+      <h2 id="endTitle"></h2>
+      <p id="endText"></p>
+      <button class="restart-btn" id="restartBtn">Начать заново</button>
+    </div>
   </section>
 
 </div>
 
 <script>
-  const startScreen = document.getElementById('startScreen');
-  const chatScreen = document.getElementById('chatScreen');
-  const startBtn = document.getElementById('startBtn');
-  const resetBtn = document.getElementById('resetBtn');
-  const messagesEl = document.getElementById('messages');
-  const statusEl = document.getElementById('status');
+/* =========================================================
+   СОСТОЯНИЕ ИГРЫ
+   ========================================================= */
+const state = {
+  trust: 5,
+  heat: 3,
+  anger: 0,
+  flags: {},
+};
 
-  let timers = [];
-  let typingRow = null;
+const startScreen = document.getElementById('startScreen');
+const chatScreen = document.getElementById('chatScreen');
+const messagesEl = document.getElementById('messages');
+const choicesEl = document.getElementById('choices');
+const chatAvatar = document.getElementById('chatAvatar');
+const chatName = document.getElementById('chatName');
+const chatStatus = document.getElementById('chatStatus');
+const transition = document.getElementById('transition');
+const transitionText = document.getElementById('transitionText');
+const endScreen = document.getElementById('endScreen');
+const endTitle = document.getElementById('endTitle');
+const endText = document.getElementById('endText');
 
-  const dialogue = [
-    { from: 'diana', text: 'Ты не спишь?', delay: 700 },
-    { from: 'artem', text: 'Не сплю. Думал о тебе.', delay: 900 },
-    { from: 'diana', text: 'И как это выглядело?', delay: 850 },
-    { from: 'artem', text: 'Как ты улыбаешься, когда смущаешься. И как смотришь, когда хочешь, чтобы я подошёл.', delay: 1200 },
-    { from: 'diana', text: 'Опасно. Я сейчас как раз смотрю в телефон и представляю тебя рядом.', delay: 1100 },
-    { from: 'artem', text: 'Я бы не тратил время на разговоры.', delay: 900 },
-    { from: 'diana', text: 'А что бы ты сделал?', delay: 800 },
-    { from: 'artem', text: 'Забрал бы телефон. Притянул тебя ближе. И сказал, чтобы ты не прятала глаза.', delay: 1250 },
-    { from: 'diana', text: 'У меня сердце уже стучит быстрее.', delay: 1000 },
-    { from: 'artem', text: 'Хорошо. Значит, я не один такой.', delay: 850 },
-    { from: 'diana', text: 'Я скучаю по твоим рукам. По тому, как ты держишь меня за талию.', delay: 1200 },
-    { from: 'artem', text: 'Я скучаю по твоему запаху. И по тому, как ты выдыхаешь мне в шею.', delay: 1250 },
-    { from: 'diana', text: 'Ты сейчас специально?', delay: 800 },
-    { from: 'artem', text: 'Да. Мне нравится, как ты на это реагируешь.', delay: 1000 },
-    { from: 'diana', text: 'Тогда не останавливайся.', delay: 850 },
-    { from: 'artem', text: 'Я бы поцеловал тебя не сразу. Сначала у виска. Потом у уголка губ. Потом так, чтобы ты забыла, как дышать.', delay: 1500 },
-    { from: 'diana', text: 'Артём.', delay: 700 },
-    { from: 'artem', text: 'Да?', delay: 600 },
-    { from: 'diana', text: 'Я хочу, чтобы ты был здесь. Прямо сейчас.', delay: 1000 },
-    { from: 'artem', text: 'Я тоже. Если бы я был рядом, я бы не отпустил тебя до утра.', delay: 1200 },
-    { from: 'diana', text: 'Обещаешь?', delay: 700 },
-    { from: 'artem', text: 'Обещаю. А ты?', delay: 700 },
-    { from: 'diana', text: 'Я уже не могу думать ни о чём другом.', delay: 1000 },
-    { from: 'artem', text: 'Тогда считай, что я уже у тебя за дверью.', delay: 1050 },
-    { from: 'diana', text: 'Не шути так.', delay: 750 },
-    { from: 'artem', text: 'Я не шучу.', delay: 700 },
-    { from: 'diana', text: 'Хорошо. Я открываю.', delay: 850 },
-    { from: 'artem', text: 'Умница. Теперь отойди от двери и жди, пока я войду.', delay: 1150 },
-    { from: 'diana', text: 'Сердце колотится.', delay: 800 },
-    { from: 'artem', text: 'Ничего. Я буду осторожно. Сначала.', delay: 1000 },
-    { from: 'diana', text: 'Я тебя жду.', delay: 700 },
-    { from: 'artem', text: 'Я рядом.', delay: 800 }
-  ];
+let busy = false;
 
-  function clearTimers() {
-    timers.forEach(clearTimeout);
-    timers = [];
+/* =========================================================
+   ПАРАМЕТРЫ
+   ========================================================= */
+function updateStats() {
+  state.trust = Math.max(0, Math.min(10, state.trust));
+  state.heat = Math.max(0, Math.min(10, state.heat));
+  state.anger = Math.max(0, Math.min(10, state.anger));
+  document.getElementById('statTrust').textContent = state.trust;
+  document.getElementById('statHeat').textContent = state.heat;
+  document.getElementById('statAnger').textContent = state.anger;
+}
+
+function apply(delta) {
+  if (delta.trust) state.trust += delta.trust;
+  if (delta.heat) state.heat += delta.heat;
+  if (delta.anger) state.anger += delta.anger;
+  if (delta.flags) Object.assign(state.flags, delta.flags);
+  updateStats();
+}
+
+/* =========================================================
+   РЕНДЕР СООБЩЕНИЙ
+   ========================================================= */
+function scrollBottom() {
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function setHeader(who, status) {
+  if (who === 'diana') {
+    chatAvatar.className = 'avatar diana';
+    chatAvatar.textContent = 'Д';
+    chatName.textContent = 'Диана';
+  } else if (who === 'artem') {
+    chatAvatar.className = 'avatar artem';
+    chatAvatar.textContent = 'А';
+    chatName.textContent = 'Артём';
+  } else {
+    chatAvatar.className = 'avatar system';
+    chatAvatar.textContent = '·';
+    chatName.textContent = '···';
   }
+  chatStatus.textContent = status || '';
+}
 
-  function scrollToBottom() {
-    messagesEl.scrollTop = messagesEl.scrollHeight;
-  }
+function addBubble(from, text) {
+  const row = document.createElement('div');
+  row.className = 'message-row ' + from;
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.textContent = text;
+  row.appendChild(bubble);
+  messagesEl.appendChild(row);
+  scrollBottom();
+  return row;
+}
 
-  function removeTyping() {
-    if (typingRow) {
-      typingRow.remove();
-      typingRow = null;
+function addNarrator(text) {
+  const row = document.createElement('div');
+  row.className = 'message-row system';
+  const bubble = document.createElement('div');
+  bubble.className = 'narrator';
+  bubble.textContent = text;
+  row.appendChild(bubble);
+  messagesEl.appendChild(row);
+  scrollBottom();
+}
+
+function showTyping(from) {
+  const row = document.createElement('div');
+  row.className = 'message-row ' + from;
+  row.innerHTML = '<div class="bubble typing-bubble"><span></span><span></span><span></span></div>';
+  messagesEl.appendChild(row);
+  scrollBottom();
+  return row;
+}
+
+function wait(ms) {
+  return new Promise(res => setTimeout(res, ms));
+}
+
+async function typeMessage(from, text, speed = 30) {
+  const typing = showTyping(from);
+  const dur = Math.min(1600, 500 + text.length * 18);
+  await wait(dur);
+  typing.remove();
+  addBubble(from, text);
+}
+
+async function playSequence(seq) {
+  for (const step of seq) {
+    if (step.type === 'narrator') {
+      await wait(step.delay || 500);
+      addNarrator(step.text);
+    } else if (step.type === 'header') {
+      setHeader(step.who, step.status);
+      await wait(step.delay || 200);
+    } else if (step.type === 'transition') {
+      await showTransition(step.text, step.sub);
+    } else {
+      await wait(step.delay || 400);
+      await typeMessage(step.from, step.text);
     }
   }
+}
 
-  function showTyping(from) {
-    removeTyping();
-    typingRow = document.createElement('div');
-    typingRow.className = 'message-row ' + from;
-    typingRow.innerHTML = '<div class="bubble typing-bubble"><span></span><span></span><span></span></div>';
-    messagesEl.appendChild(typingRow);
-    scrollToBottom();
-  }
+/* =========================================================
+   ПЕРЕХОДЫ
+   ========================================================= */
+function showTransition(main, sub) {
+  return new Promise(resolve => {
+    transitionText.innerHTML = main + (sub ? `<small>${sub}</small>` : '');
+    transition.classList.add('active');
+    setTimeout(() => {
+      resolve();
+    }, 2200);
+  });
+}
 
-  function addMessage(msg) {
-    const row = document.createElement('div');
-    row.className = 'message-row ' + msg.from;
+function hideTransition() {
+  transition.classList.remove('active');
+  return wait(700);
+}
 
-    const bubble = document.createElement('div');
-    bubble.className = 'bubble';
-    bubble.textContent = msg.text;
+/* =========================================================
+   ВЫБОРЫ
+   ========================================================= */
+function offerChoices(choices) {
+  return new Promise(resolve => {
+    choicesEl.innerHTML = '';
+    choices.forEach((c, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
 
-    row.appendChild(bubble);
-    messagesEl.appendChild(row);
-    scrollToBottom();
-  }
+      const tagClass = c.tagClass || 'bold';
+      btn.innerHTML = `<span class="tag ${tagClass}">${c.tag || 'ВЫБОР'}</span>${c.label}`;
 
-  function playDialogue() {
-    clearTimers();
-    removeTyping();
-    messagesEl.innerHTML = '';
-    statusEl.textContent = 'онлайн';
-
-    let time = 250;
-
-    dialogue.forEach((msg) => {
-      const typingStart = time + 150;
-      const typingDuration = Math.min(1700, 550 + msg.text.length * 16);
-      const showAt = typingStart + typingDuration;
-
-      timers.push(setTimeout(() => showTyping(msg.from), typingStart));
-      timers.push(setTimeout(() => {
-        removeTyping();
-        addMessage(msg);
-      }, showAt));
-
-      time = showAt + (msg.delay || 700);
+      btn.addEventListener('click', async () => {
+        if (busy) return;
+        busy = true;
+        choicesEl.innerHTML = '';
+        addBubble('artem', c.artemReply || c.label);
+        if (c.effects) apply(c.effects);
+        await wait(300);
+        busy = false;
+        resolve(c.next);
+      });
+      choicesEl.appendChild(btn);
     });
+    scrollBottom();
+  });
+}
 
-    timers.push(setTimeout(() => {
-      statusEl.textContent = 'была недавно';
-    }, time + 1200));
+/* =========================================================
+   СЦЕНАРИЙ
+   ========================================================= */
+
+/* ---------- СЦЕНА 1: НОЧЬ, ОН ПРОПАЛ ---------- */
+async function sceneNight() {
+  setHeader('diana', 'была недавно');
+  await playSequence([
+    { type: 'narrator', text: '23:47. Ты не ответил. Она пишет.' },
+    { from: 'diana', text: 'Артём?' },
+    { from: 'diana', text: 'Ты вообще собирался мне писать?' },
+    { from: 'diana', text: 'Я жду уже два часа.' },
+    { from: 'diana', text: 'Если ты уснул — просто скажи. Я не буду злиться.' },
+    { type: 'narrator', text: 'Она врёт. Будет злиться.' },
+  ]);
+
+  const next = await offerChoices([
+    {
+      tag: 'ЧЕСТНО', tagClass: 'care',
+      label: 'Признаться, что уснул. Извиниться.',
+      artemReply: 'Прости. Я уснул. Зачитался и вырубился, даже телефон не заметил.',
+      effects: { trust: 1, anger: -1, heat: 0, flags: { honest: true } },
+      next: 'afterHonest'
+    },
+    {
+      tag: 'ДЕРЗКО', tagClass: 'bold',
+      label: 'Сказать, что думал о ней и не мог заснуть.',
+      artemReply: 'Не спал. Думал о тебе. По-разному думал.',
+      effects: { heat: 2, trust: 0, anger: 0, flags: { bold: true } },
+      next: 'afterBold'
+    },
+    {
+      tag: 'СОЛГАТЬ', tagClass: 'cold',
+      label: 'Соврать, что были проблемы со связью.',
+      artemReply: 'Связь пропадала. Полночи без сети сидел.',
+      effects: { trust: -2, anger: 2, flags: { lied: true } },
+      next: 'afterLie'
+    }
+  ]);
+  return next;
+}
+
+async function afterHonest() {
+  await playSequence([
+    { from: 'diana', text: 'Уснул. Ну конечно.' },
+    { from: 'diana', text: 'А я тут сижу, как дура, и придумываю, что с тобой что-то случилось.' },
+    { from: 'diana', text: 'Знаешь, что самое обидное? Я не злюсь. Просто как-то обидно.' },
+  ]);
+
+  const next = await offerChoices([
+    {
+      tag: 'ИСКУПИТЬ', tagClass: 'bold',
+      label: 'Сказать, что готов загладить вину как угодно.',
+      artemReply: 'Тогда я должен это исправить. Как угодно. Ты только скажи.',
+      effects: { heat: 2, trust: 1, flags: { promised: true } },
+      next: 'beforeMorning'
+    },
+    {
+      tag: 'МЯГКО', tagClass: 'care',
+      label: 'Сказать, что скучал по ней больше, чем по сну.',
+      artemReply: 'Я уснул, но знаешь, о чём было последнее сообщение, которое я хотел написать? О тебе.',
+      effects: { trust: 2, heat: 1 },
+      next: 'beforeMorning'
+    }
+  ]);
+  return next;
+}
+
+async function afterBold() {
+  await playSequence([
+    { from: 'diana', text: 'Вот так сразу?' },
+    { from: 'diana', text: 'Ты вообще понимаешь, что я тут полночи с ума схожу?' },
+    { from: 'diana', text: 'И ты начинаешь с этого?' },
+  ]);
+
+  const next = await offerChoices([
+    {
+      tag: 'НАГЛО', tagClass: 'bold',
+      label: 'Спросить, что именно она себе представляла.',
+      artemReply: 'Ты сама начала. Или мне перестать?',
+      effects: { heat: 3, trust: -1, anger: 1, flags: { bold: true } },
+      next: 'beforeMorning'
+    },
+    {
+      tag: 'ЧЕСТНО', tagClass: 'care',
+      label: 'Признаться, что на самом деле уснул, но не хотел признаваться.',
+      artemReply: 'Ладно. Я уснул. Просто не хотел выглядеть идиотом.',
+      effects: { trust: 2, heat: 0, anger: -1, flags: { honest: true } },
+      next: 'beforeMorning'
+    }
+  ]);
+  return next;
+}
+
+async function afterLie() {
+  await playSequence([
+    { from: 'diana', text: 'Связь.' },
+    { from: 'diana', text: 'Забавно. У тебя в профиле было «был в сети 5 минут назад» в 23:20.' },
+    { from: 'diana', text: 'Так что не ври мне, пожалуйста.' },
+    { from: 'diana', text: 'Я ненавижу, когда врут.' },
+  ]);
+
+  const next = await offerChoices([
+    {
+      tag: 'СДАТЬСЯ', tagClass: 'cold',
+      label: 'Признаться, что соврал, потому что было стыдно.',
+      artemReply: 'Ты права. Я соврал. Уснул и не хотел, чтобы ты думала, что мне всё равно.',
+      effects: { trust: 1, anger: -1, flags: { lied: true, admitted: true } },
+      next: 'beforeMorning'
+    },
+    {
+      tag: 'ДОЖАТЬ', tagClass: 'bold',
+      label: 'Продолжать врать, что приложение глючит.',
+      artemReply: 'Это приложение глючит. Я не знаю, что тебе показалось.',
+      effects: { trust: -3, anger: 3, flags: { caught: true } },
+      next: 'beforeMorning'
+    }
+  ]);
+  return next;
+}
+
+/* ---------- ПЕРЕХОД: НОЧЬ → УТРО ---------- */
+async function beforeMorning() {
+  await wait(500);
+  await showTransition('…', 'позже этой ночью');
+  await hideTransition();
+
+  await playSequence([
+    { type: 'narrator', text: '03:12. Вы оба замолчали. Кто-то заснул первым.' },
+  ]);
+
+  setHeader('diana', 'была давно');
+  await playSequence([
+    { type: 'narrator', text: '08:40. Утро. Она не написала первой.' },
+  ]);
+
+  const next = await offerChoices([
+    {
+      tag: 'ПЕРВЫЙ ШАГ', tagClass: 'care',
+      label: 'Написать самому: «Доброе утро. Ты как?»',
+      artemReply: 'Доброе утро. Ты как?',
+      effects: { trust: 1, anger: -1 },
+      next: 'morningTalk'
+    },
+    {
+      tag: 'ОТКРОВЕННО', tagClass: 'bold',
+      label: 'Написать: «Я не спал. Думал о вчерашнем.»',
+      artemReply: 'Я почти не спал. Думал о вчерашнем. О тебе.',
+      effects: { heat: 2, trust: 1 },
+      next: 'morningTalk'
+    },
+    {
+      tag: 'СУХО', tagClass: 'cold',
+      label: 'Написать просто: «Ты где?»',
+      artemReply: 'Ты где?',
+      effects: { anger: 2, trust: -1, flags: { coldMorning: true } },
+      next: 'morningTalk'
+    }
+  ]);
+  return next;
+}
+
+/* ---------- СЦЕНА 2: УТРО, ПЕРЕПИСКА ---------- */
+async function morningTalk() {
+  setHeader('diana', 'онлайн');
+  await playSequence([
+    { from: 'diana', text: 'Доброе.' },
+    { from: 'diana', text: 'Странное утро. Ты вчера так и не объяснил толком.' },
+  ]);
+
+  if (state.flags.lied && state.flags.caught) {
+    await playSequence([
+      { from: 'diana', text: 'И я всё ещё не забыла про «связь».' },
+    ]);
   }
 
-  startBtn.addEventListener('click', () => {
-    startScreen.classList.add('hidden');
-    chatScreen.classList.remove('hidden');
-    playDialogue();
-  });
+  const next = await offerChoices([
+    {
+      tag: 'ПРИЗНАТЬСЯ', tagClass: 'care',
+      label: 'Сказать прямо: «Я облажался. Прости.»',
+      artemReply: 'Я облажался. Хотел написать — не написал. Прости.',
+      effects: { trust: 2, anger: -1 },
+      next: 'beforeSchool'
+    },
+    {
+      tag: 'СМЕНИТЬ ТЕМУ', tagClass: 'bold',
+      label: 'Перевести всё в шутку и флирт.',
+      artemReply: 'Хватит о вчера. Скажи лучше, что на тебе сегодня.',
+      effects: { heat: 2, trust: -1, anger: 1 },
+      next: 'beforeSchool'
+    },
+    {
+      tag: 'ОТСТРАНИТЬСЯ', tagClass: 'cold',
+      label: 'Сказать, что не хочет об этом говорить.',
+      artemReply: 'Давай не будем. У меня и так голова кругом.',
+      effects: { trust: -2, anger: 2 },
+      next: 'beforeSchool'
+    }
+  ]);
+  return next;
+}
 
-  resetBtn.addEventListener('click', () => {
-    playDialogue();
-  });
+/* ---------- ПЕРЕХОД: УТРО → ШКОЛА ---------- */
+async function beforeSchool() {
+  await showTransition('ПОСЛЕ ШКОЛЫ', 'они встретятся снова');
+  await hideTransition();
+  setHeader('diana', 'не в сети');
+  await playSequence([
+    { type: 'narrator', text: 'День прошёл как в тумане. Коридоры, взгляды, случайные касания. Вы почти не разговаривали.' },
+    { type: 'narrator', text: 'Вечер. Она пишет первой. Но не то, что ты ожидал.' },
+  ]);
+
+  const next = await offerChoices([
+    {
+      tag: 'ПРОСТО', tagClass: 'care',
+      label: 'Открыть и прочитать сразу.',
+      artemReply: 'Я здесь. Что случилось?',
+      effects: { trust: 1 },
+      next: 'schoolFight'
+    },
+    {
+      tag: 'СПОКОЙНО', tagClass: 'bold',
+      label: 'Подождать, не отвечать сразу.',
+      artemReply: 'Слушаю.',
+      effects: { anger: 1, flags: { ignored: true } },
+      next: 'schoolFight'
+    }
+  ]);
+  return next;
+}
+
+/* ---------- СЦЕНА 3: РУГАНЬ ---------- */
+async function schoolFight() {
+  setHeader('diana', 'онлайн');
+  await playSequence([
+    { from: 'diana', text: 'Нам надо поговорить.' },
+    { from: 'diana', text: 'Я весь день думала.' },
+    { from: 'diana', text: 'Ты понимаешь, что с тобой рядом я постоянно чувствую себя лишней?' },
+    { from: 'diana', text: 'Ты пропадаешь, потом появляешься, потом делаешь вид, что всё нормально.' },
+    { from: 'diana', text: 'Мне это надоело.' },
+  ]);
+
+  if (state.trust <= 3) {
+    await playSequence([
+      { from: 'diana', text: 'И да, я знаю, что ты мне врал. Не надо делать вид, что я дура.' },
+      { type: 'narrator', text: 'Она уже на грани.' },
+    ]);
+  }
+
+  const next = await offerChoices([
+    {
+      tag: 'ИЗВИНИТЬСЯ', tagClass: 'care',
+      label: 'Сказать, что она права, и что ты готов меняться.',
+      artemReply: 'Ты права. Я веду себя как идиот. Скажи, что мне сделать, чтобы ты не чувствовала себя лишней.',
+      effects: { trust: 3, anger: -2 },
+      next: 'afterFightGood'
+    },
+    {
+      tag: 'ЗАЩИЩАТЬСЯ', tagClass: 'bold',
+      label: 'Сказать, что она преувеличивает.',
+      artemReply: 'Ты преувеличиваешь. Я не пропадал — у меня были дела.',
+      effects: { trust: -1, anger: 2 },
+      next: 'afterFightBad'
+    },
+    {
+      tag: 'ЖЁСТКО', tagClass: 'cold',
+      label: 'Сказать, что если ей надоело — пусть уходит.',
+      artemReply: 'Если тебе надоело — никто тебя не держит.',
+      effects: { trust: -4, anger: 4, flags: { ultimatum: true } },
+      next: 'afterFightBad'
+    }
+  ]);
+  return next;
+}
+
+async function afterFightGood() {
+  await playSequence([
+    { from: 'diana', text: '…' },
+    { from: 'diana', text: 'Ты правда так думаешь? Или просто хочешь, чтобы я замолчала?' },
+  ]);
+
+  const next = await offerChoices([
+    {
+      tag: 'ПРАВДА', tagClass: 'care',
+      label: 'Сказать, что не хочет её терять.',
+      artemReply: 'Я не хочу тебя терять. Это не пустые слова.',
+      effects: { trust: 2, heat: 1 },
+      next: 'finalGood'
+    },
+    {
+      tag: 'ДОКАЗАТЬ', tagClass: 'bold',
+      label: 'Сказать, что докажет это не словами.',
+      artemReply: 'Я не буду обещать. Я просто покажу. Дай мне шанс.',
+      effects: { heat: 2, trust: 1 },
+      next: 'finalGood'
+    }
+  ]);
+  return next;
+}
+
+async function afterFightBad() {
+  await playSequence([
+    { from: 'diana', text: 'Значит, вот так.' },
+    { from: 'diana', text: 'Я так и думала.' },
+    { type: 'narrator', text: 'Она печатает. Долго. Потом останавливается.' },
+  ]);
+
+  const next = await offerChoices([
+    {
+      tag: 'ОСТАНОВИТЬ', tagClass: 'care',
+      label: 'Написать: «Подожди. Я не так сказал. Дай объясню.»',
+      artemReply: 'Подожди. Я не так сказал. Дай объясню.',
+      effects: { trust: 1, anger: -1, flags: { savedIt: true } },
+      next: 'finalBad'
+    },
+    {
+      tag: 'ПРОМОЛЧАТЬ', tagClass: 'cold',
+      label: 'Ничего не писать.',
+      artemReply: '…',
+      effects: { trust: -2, anger: 2 },
+      next: 'finalBad'
+    }
+  ]);
+  return next;
+}
+
+/* ---------- ФИНАЛЫ ---------- */
+async function finalGood() {
+  await playSequence([
+    { from: 'diana', text: 'Хорошо.' },
+    { from: 'diana', text: 'Тогда не подведи.' },
+    { from: 'diana', text: 'И, Артём…' },
+    { from: 'diana', text: 'Я всё ещё думаю о том, что ты написал ночью.' },
+    { from: 'diana', text: 'Увидимся завтра.' },
+    { type: 'narrator', text: 'Она была в сети ещё пять минут. Потом ушла.' },
+    { type: 'narrator', text: 'Ты смотришь на экран и понимаешь: ты ещё не выиграл. Но ты не проиграл.' },
+  ]);
+
+  if (state.heat >= 7 && state.trust >= 7) {
+    await playSequence([
+      { from: 'diana', text: 'И да…' },
+      { from: 'diana', text: 'Когда мы увидимся завтра, я хочу, чтобы ты сказал это не в переписке.' },
+    ]);
+  }
+
+  showEnding('«Завтра»',
+    'Ты сохранил её. Не идеально, с ошибками, но сохранил. Настоящее начинается не в переписке, а когда экран гаснет.',
+    true);
+}
+
+async function finalBad() {
+  await playSequence([
+    { from: 'diana', text: 'Знаешь что? Забудь.' },
+    { from: 'diana', text: 'Я устала.' },
+    { type: 'narrator', text: 'Она больше не в сети.' },
+  ]);
+
+  if (state.flags.savedIt) {
+    await playSequence([
+      { type: 'narrator', text: 'Ты пытался. Но было слишком поздно.' },
+      { type: 'narrator', text: 'Иногда одно сообщение — это всё, что было нужно. И его не хватило.' },
+    ]);
+  }
+
+  showEnding('«Прочитано»',
+    'Она ушла. Не хлопнув дверью — просто перестала отвечать. Ты смотришь на пустой чат и думаешь, что нужно было сказать иначе.',
+    false);
+}
+
+function showEnding(title, text, good) {
+  endTitle.textContent = title;
+  endTitle.style.color = good ? '#ff7a9f' : '#9aa8ff';
+  endText.textContent = text;
+
+  let score = '';
+  if (state.flags.savedIt) score = '<br><br><span class="score">Но ты почти её вернул.</span>';
+  if (good) score = '<br><br><span class="score">Финал: ты не потерял её.</span>';
+  endText.innerHTML = text + score;
+
+  endScreen.classList.add('active');
+}
+
+/* =========================================================
+   ЗАПУСК
+   ========================================================= */
+async function startGame() {
+  state.trust = 5; state.heat = 3; state.anger = 0; state.flags = {};
+  updateStats();
+  messagesEl.innerHTML = '';
+  choicesEl.innerHTML = '';
+  endScreen.classList.remove('active');
+  transition.classList.remove('active');
+
+  startScreen.classList.add('hidden');
+  chatScreen.classList.remove('hidden');
+  chatScreen.style.display = 'flex';
+
+  await sceneNight();
+  await afterHonestOrBoldOrLie();
+
+  // Сюда попадаем после выбора в сцене 1 (по next)
+  // Но так как структура асинхронная — продолжаем цепочку:
+}
+
+/* Продолжение цепочки — вызывается из sceneNight через next */
+async function afterHonestOrBoldOrLie() {
+  // цепочка уже вызвана через offerChoices -> next -> beforeMorning
+}
+
+/* ВАЖНО: связываем цепочку через next-функции */
+async function runStory() {
+  state.trust = 5; state.heat = 3; state.anger = 0; state.flags = {};
+  updateStats();
+  messagesEl.innerHTML = '';
+  choicesEl.innerHTML = '';
+  endScreen.classList.remove('active');
+
+  const next1 = await sceneNight();
+  const next2 = await window[next1]();
+  const next3 = await window[next2]();
+  const next4 = await window[next3]();
+  const next5 = await window[next4]();
+  if (next5 && window[next5]) await window[next5]();
+}
+
+startBtn.addEventListener('click', () => {
+  startScreen.classList.add('hidden');
+  chatScreen.classList.remove('hidden');
+  chatScreen.style.display = 'flex';
+  runStory();
+});
+
+restartBtn.addEventListener('click', () => {
+  endScreen.classList.remove('active');
+  messagesEl.innerHTML = '';
+  choicesEl.innerHTML = '';
+  runStory();
+});
+
+updateStats();
 </script>
 
 </body>

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Артём и Диана — переписка</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(255, 70, 120, 0.18), transparent 35%),
+      radial-gradient(circle at 80% 90%, rgba(90, 100, 255, 0.16), transparent 40%),
+      #09090d;
+    color: #f0eef7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .hidden { display: none !important; }
+
+  /* Стартовый экран */
+  .start-screen {
+    background: rgba(18, 18, 28, 0.86);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 28px;
+    padding: 54px 34px;
+    text-align: center;
+    backdrop-filter: blur(18px);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(255, 70, 120, 0.12);
+    border: 1px solid rgba(255, 70, 120, 0.35);
+    color: #ff7a9f;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin-bottom: 22px;
+  }
+
+  .start-screen h1 {
+    font-size: clamp(34px, 9vw, 46px);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    margin-bottom: 14px;
+  }
+
+  .start-screen h1 span {
+    color: #ff4f7e;
+  }
+
+  .start-screen p {
+    color: #9995ad;
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 320px;
+    margin: 0 auto 32px;
+  }
+
+  .start-btn {
+    width: 100%;
+    padding: 17px 24px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #ff4f7e, #ff785a);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.18s, box-shadow 0.18s;
+    box-shadow: 0 14px 32px rgba(255, 79, 126, 0.28);
+  }
+
+  .start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px rgba(255, 79, 126, 0.38);
+  }
+
+  .start-btn:active { transform: translateY(0); }
+
+  .start-note {
+    margin-top: 18px;
+    color: #5f5c70;
+    font-size: 12px;
+  }
+
+  /* Чат */
+  .chat-screen {
+    height: min(760px, calc(100vh - 36px));
+    background: #101017;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 28px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  }
+
+  .chat-header {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 16px 18px;
+    background: rgba(22, 22, 34, 0.92);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(14px);
+  }
+
+  .avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 17px;
+    flex-shrink: 0;
+  }
+
+  .avatar.diana {
+    background: linear-gradient(135deg, #ff4f7e, #ff9a6b);
+    color: #fff;
+  }
+
+  .header-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .header-name {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .header-status {
+    font-size: 12px;
+    color: #ff7a9f;
+  }
+
+  .reset-btn {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    color: #a09cb5;
+    font-size: 12px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.18s;
+    flex-shrink: 0;
+  }
+
+  .reset-btn:hover {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.22);
+  }
+
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 22px 16px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scroll-behavior: smooth;
+  }
+
+  .messages::-webkit-scrollbar { width: 5px; }
+  .messages::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+  }
+
+  .message-row {
+    display: flex;
+    width: 100%;
+    animation: pop 0.24s ease-out;
+  }
+
+  .message-row.diana { justify-content: flex-start; }
+  .message-row.artem { justify-content: flex-end; }
+
+  .bubble {
+    max-width: 82%;
+    padding: 12px 15px;
+    border-radius: 18px;
+    font-size: 15px;
+    line-height: 1.45;
+    word-wrap: break-word;
+  }
+
+  .message-row.diana .bubble {
+    background: #1c1c29;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom-left-radius: 6px;
+    color: #e8e5f3;
+  }
+
+  .message-row.artem .bubble {
+    background: linear-gradient(135deg, #ff4f7e, #ff785a);
+    border-bottom-right-radius: 6px;
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(255, 79, 126, 0.18);
+  }
+
+  @keyframes pop {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Индикатор печати */
+  .typing-bubble {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 14px 16px;
+    min-width: 58px;
+  }
+
+  .typing-bubble span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #817d96;
+    animation: blink 1.2s infinite ease-in-out;
+  }
+
+  .typing-bubble span:nth-child(2) { animation-delay: 0.18s; }
+  .typing-bubble span:nth-child(3) { animation-delay: 0.36s; }
+
+  @keyframes blink {
+    0%, 60%, 100% { opacity: 0.25; transform: translateY(0); }
+    30% { opacity: 1; transform: translateY(-3px); }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Старт -->
+  <section class="start-screen" id="startScreen">
+    <div class="badge">18+</div>
+    <h1>Артём<br><span>и Диана</span></h1>
+    <p>Очень горячая переписка. Нажми, чтобы открыть чат.</p>
+    <button class="start-btn" id="startBtn">Начать</button>
+    <div class="start-note">Персонажи совершеннолетние. Всё вымысел.</div>
+  </section>
+
+  <!-- Чат -->
+  <section class="chat-screen hidden" id="chatScreen">
+    <header class="chat-header">
+      <div class="avatar diana">Д</div>
+      <div class="header-info">
+        <div class="header-name">Диана</div>
+        <div class="header-status" id="status">онлайн</div>
+      </div>
+      <button class="reset-btn" id="resetBtn">Заново</button>
+    </header>
+
+    <main class="messages" id="messages"></main>
+  </section>
+
+</div>
+
+<script>
+  const startScreen = document.getElementById('startScreen');
+  const chatScreen = document.getElementById('chatScreen');
+  const startBtn = document.getElementById('startBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const messagesEl = document.getElementById('messages');
+  const statusEl = document.getElementById('status');
+
+  let timers = [];
+  let typingRow = null;
+
+  const dialogue = [
+    { from: 'diana', text: 'Ты не спишь?', delay: 700 },
+    { from: 'artem', text: 'Не сплю. Думал о тебе.', delay: 900 },
+    { from: 'diana', text: 'И как это выглядело?', delay: 850 },
+    { from: 'artem', text: 'Как ты улыбаешься, когда смущаешься. И как смотришь, когда хочешь, чтобы я подошёл.', delay: 1200 },
+    { from: 'diana', text: 'Опасно. Я сейчас как раз смотрю в телефон и представляю тебя рядом.', delay: 1100 },
+    { from: 'artem', text: 'Я бы не тратил время на разговоры.', delay: 900 },
+    { from: 'diana', text: 'А что бы ты сделал?', delay: 800 },
+    { from: 'artem', text: 'Забрал бы телефон. Притянул тебя ближе. И сказал, чтобы ты не прятала глаза.', delay: 1250 },
+    { from: 'diana', text: 'У меня сердце уже стучит быстрее.', delay: 1000 },
+    { from: 'artem', text: 'Хорошо. Значит, я не один такой.', delay: 850 },
+    { from: 'diana', text: 'Я скучаю по твоим рукам. По тому, как ты держишь меня за талию.', delay: 1200 },
+    { from: 'artem', text: 'Я скучаю по твоему запаху. И по тому, как ты выдыхаешь мне в шею.', delay: 1250 },
+    { from: 'diana', text: 'Ты сейчас специально?', delay: 800 },
+    { from: 'artem', text: 'Да. Мне нравится, как ты на это реагируешь.', delay: 1000 },
+    { from: 'diana', text: 'Тогда не останавливайся.', delay: 850 },
+    { from: 'artem', text: 'Я бы поцеловал тебя не сразу. Сначала у виска. Потом у уголка губ. Потом так, чтобы ты забыла, как дышать.', delay: 1500 },
+    { from: 'diana', text: 'Артём.', delay: 700 },
+    { from: 'artem', text: 'Да?', delay: 600 },
+    { from: 'diana', text: 'Я хочу, чтобы ты был здесь. Прямо сейчас.', delay: 1000 },
+    { from: 'artem', text: 'Я тоже. Если бы я был рядом, я бы не отпустил тебя до утра.', delay: 1200 },
+    { from: 'diana', text: 'Обещаешь?', delay: 700 },
+    { from: 'artem', text: 'Обещаю. А ты?', delay: 700 },
+    { from: 'diana', text: 'Я уже не могу думать ни о чём другом.', delay: 1000 },
+    { from: 'artem', text: 'Тогда считай, что я уже у тебя за дверью.', delay: 1050 },
+    { from: 'diana', text: 'Не шути так.', delay: 750 },
+    { from: 'artem', text: 'Я не шучу.', delay: 700 },
+    { from: 'diana', text: 'Хорошо. Я открываю.', delay: 850 },
+    { from: 'artem', text: 'Умница. Теперь отойди от двери и жди, пока я войду.', delay: 1150 },
+    { from: 'diana', text: 'Сердце колотится.', delay: 800 },
+    { from: 'artem', text: 'Ничего. Я буду осторожно. Сначала.', delay: 1000 },
+    { from: 'diana', text: 'Я тебя жду.', delay: 700 },
+    { from: 'artem', text: 'Я рядом.', delay: 800 }
+  ];
+
+  function clearTimers() {
+    timers.forEach(clearTimeout);
+    timers = [];
+  }
+
+  function scrollToBottom() {
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function removeTyping() {
+    if (typingRow) {
+      typingRow.remove();
+      typingRow = null;
+    }
+  }
+
+  function showTyping(from) {
+    removeTyping();
+    typingRow = document.createElement('div');
+    typingRow.className = 'message-row ' + from;
+    typingRow.innerHTML = '<div class="bubble typing-bubble"><span></span><span></span><span></span></div>';
+    messagesEl.appendChild(typingRow);
+    scrollToBottom();
+  }
+
+  function addMessage(msg) {
+    const row = document.createElement('div');
+    row.className = 'message-row ' + msg.from;
+
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.textContent = msg.text;
+
+    row.appendChild(bubble);
+    messagesEl.appendChild(row);
+    scrollToBottom();
+  }
+
+  function playDialogue() {
+    clearTimers();
+    removeTyping();
+    messagesEl.innerHTML = '';
+    statusEl.textContent = 'онлайн';
+
+    let time = 250;
+
+    dialogue.forEach((msg) => {
+      const typingStart = time + 150;
+      const typingDuration = Math.min(1700, 550 + msg.text.length * 16);
+      const showAt = typingStart + typingDuration;
+
+      timers.push(setTimeout(() => showTyping(msg.from), typingStart));
+      timers.push(setTimeout(() => {
+        removeTyping();
+        addMessage(msg);
+      }, showAt));
+
+      time = showAt + (msg.delay || 700);
+    });
+
+    timers.push(setTimeout(() => {
+      statusEl.textContent = 'была недавно';
+    }, time + 1200));
+  }
+
+  startBtn.addEventListener('click', () => {
+    startScreen.classList.add('hidden');
+    chatScreen.classList.remove('hidden');
+    playDialogue();
+  });
+
+  resetBtn.addEventListener('click', () => {
+    playDialogue();
+  });
+</script>
+
+</body>
+</html>
